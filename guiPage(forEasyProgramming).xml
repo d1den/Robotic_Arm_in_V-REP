@@ -1,0 +1,8 @@
+<ui title="MyModel GUI" closeable="true" resizable="false" activate="false" size="600,100">
+    <group layout="form" flat="false">
+        <label text="Left motor speed (m/s): 1" id="1"/>
+        <hslider tick-position="above" tick-interval="1" minimum="-10" maximum="10" on-change="SliderLeftMotorChange" id="2"/>
+        <label text="Right motor speed (m/s): 1" id="3"/>
+        <hslider tick-position="above" tick-interval="1" minimum="-10" maximum="10" on-change="SliderRightMotorChange" id="4"/>
+    </group>
+</ui>
