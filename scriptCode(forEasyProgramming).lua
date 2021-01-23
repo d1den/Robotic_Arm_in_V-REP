@@ -1,14 +1,149 @@
+function UpdateUi()
+    simUI.setLabelText(ui,5,'6 motor pos (deg): '..string.format("%.2f",ConvertRadToDeg(targetMotorsPositions[6]),true))
+    simUI.setSliderValue(ui,6,ConvertRadToDeg(targetMotorsPositions[6]),true)
+    simUI.setLabelText(ui,7,'5 motor pos (deg): '..string.format("%.2f",ConvertRadToDeg(targetMotorsPositions[5]),true))
+    simUI.setSliderValue(ui,8,ConvertRadToDeg(targetMotorsPositions[5]),true)
+    simUI.setLabelText(ui,9,'4 motor pos (deg): '..string.format("%.2f",ConvertRadToDeg(targetMotorsPositions[4]),true))
+    simUI.setSliderValue(ui,10,ConvertRadToDeg(targetMotorsPositions[4]),true)
+    simUI.setLabelText(ui,11,'3 motor pos (deg): '..string.format("%.2f",ConvertRadToDeg(targetMotorsPositions[3]),true))
+    simUI.setSliderValue(ui,12,ConvertRadToDeg(targetMotorsPositions[3]),true)
+    simUI.setLabelText(ui,13,'2 motor pos (deg): '..string.format("%.2f",ConvertRadToDeg(targetMotorsPositions[2]),true))
+    simUI.setSliderValue(ui,14,ConvertRadToDeg(targetMotorsPositions[2]),true)
+    simUI.setLabelText(ui,15,'1 motor pos (deg): '..string.format("%.2f",ConvertRadToDeg(targetMotorsPositions[1]),true))
+    simUI.setSliderValue(ui,16,ConvertRadToDeg(targetMotorsPositions[1]),true)
+    simUI.setEditValue(ui,18,string.format("%.3f",targetPosition[1],true),true)
+    simUI.setEditValue(ui,19,string.format("%.3f",targetPosition[2],true),true)
+    simUI.setEditValue(ui,20,string.format("%.3f",targetPosition[3],true),true)
+end
+
+function ConvertRadToDeg(rad)
+    return (rad*180)/3.14
+end
+
+function ConvertDegToRad(deg)
+    return (deg*3.14)/180
+end
+
+function ButtonClicked(ui,id)
+    targetPosition[1]=tonumber(simUI.getEditValue(ui, 18))
+    targetPosition[2]=tonumber(simUI.getEditValue(ui, 19))
+    targetPosition[3]=tonumber(simUI.getEditValue(ui, 20))
+    sim.setObjectPosition(target, -1, targetPosition)
+    for i=1,5,1 do
+        CalculateIKJointPosition()
+    end
+    UpdateUi()
+end
+
+function SliderMotorPositionChange(ui,id,newVal)
+    if id==6 then
+        targetMotorsPositions[6]=ConvertDegToRad(newVal) 
+    else
+        if id==8 then
+            targetMotorsPositions[5]=ConvertDegToRad(newVal) 
+        else
+            if id==10 then
+                targetMotorsPositions[4]=ConvertDegToRad(newVal) 
+            else
+                if id==12 then
+                    targetMotorsPositions[3]=ConvertDegToRad(newVal) 
+                else
+                    if id==14 then
+                        targetMotorsPositions[2]=ConvertDegToRad(newVal) 
+                    else
+                        if id==16 then
+                            targetMotorsPositions[1]=ConvertDegToRad(newVal) 
+                        end
+                    end
+                end
+            end
+        end
+    end
+    UpdateUi()
+end
+
+function RbClicked(ui, id)
+    if id==2 then
+        simUI.setEnabled(ui, 4, true, true)
+        simUI.setEnabled(ui, 17, false, true)
+    else
+        if id==3 then
+            simUI.setEnabled(ui, 4, false, true)
+            simUI.setEnabled(ui, 17, true, true)
+        end
+    end
+end
+
+function ShowDialog()
+    if not ui then
+    xml = [[
+        <ui title="Mark2 control GUI" closeable="true" resizable="false" activate="false" size="600,100">
+        <group layout="vbox" flat="false" id="1">
+            <label text="Choose control mode:"/>
+            <radiobutton text="Motor control mode" checked="true" on-click="RbClicked" id="2"/>
+            <radiobutton text="Target control mode" on-click="RbClicked" id="3"/>
+        </group>
+        <group layout="vbox" flat="false" id="4" enabled="true">
+            <label text="Motor control mode:"/>
+            <group layout="form" flat="true">
+                <label text="6 motor pos (deg): 0" id="5"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-150" maximum="150" on-change="SliderMotorPositionChange" id="6"/>
+                <label text="5 motor pos (deg): 0" id="7"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-125" maximum="110" on-change="SliderMotorPositionChange" id="8"/>
+                <label text="4 motor pos (deg): 0" id="9"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-155" maximum="155" on-change="SliderMotorPositionChange" id="10"/>
+                <label text="3 motor pos (deg): 0" id="11"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-170" maximum="10" on-change="SliderMotorPositionChange" id="12"/>
+                <label text="2 motor pos (deg): 0" id="13"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-155" maximum="65" on-change="SliderMotorPositionChange" id="14"/>
+                <label text="1 motor pos (deg): 0" id="15"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-105" maximum="105" on-change="SliderMotorPositionChange" id="16"/>
+            </group>
+        </group>
+        <group layout="vbox" flat="false" id="17" enabled="false">
+            <label text="Target control mode:"/>
+            <group layout="form" flat="true">
+                <label text="X (m): "/>
+                <edit value="0" id="18"/>
+                <label text="Y (m):"/>
+                <edit value="0" id="19"/>
+                <label text="Z (m):"/>
+                <edit value="0" id="20"/>
+            </group>
+            <button text="Go!" on-click="ButtonClicked" id="21"/>
+        </group>
+    </ui>
+]]
+        ui=simUI.create(xml)
+        UpdateUi()
+    end
+end
+
+function  HideDialog()
+    if ui then
+        simUI.destroy(ui)
+        ui=nil
+    end
+end
+
 function sysCall_init()
     -- Take a few handles from the robot:
     simBase=sim.getObjectHandle('Mark2')
     simTip=sim.getObjectHandle('EndPoint')
     simTarget=sim.getObjectHandle('TargetPoint')
+    target=sim.getObjectHandle('Target')
+    targetPosition=sim.getObjectPosition(target,-1)
     simMotors={}
     motorsPositions={}
+    targetMotorsPositions={}
+    for i=1,6,1 do
+        targetMotorsPositions[i]=0
+    end
     for i=1,6,1 do
         simMotors[i]=sim.getObjectHandle('Motor'..i)
     end
-
+    
+    GetAllMotorsPosition()
     -- Now build a kinematic chain and 2 IK groups (undamped and damped) inside of the IK plugin environment,
     -- based on the kinematics of the robot in the scene:
     ikJoints={}
@@ -70,16 +205,23 @@ function sysCall_init()
     simIK.setIkElementBase(ikEnv,ikGroup_damped,ikElementHandle,ikBase)
     -- specify the constraints of that IK element: 
     simIK.setIkElementConstraints(ikEnv,ikGroup_damped,ikElementHandle,simIK.constraint_pose) 
+    
+    ShowDialog()
 end
 
 function sysCall_actuation()
-    CalculateIKJointPosition()
+    targetPosition=sim.getObjectPosition(target,-1)
+    --GetAllMotorsPosition()
+
+    --CalculateIKJointPosition()
     SetAllMotorsPosition()
+    --UpdateUi()
 end 
 
 function sysCall_cleanup()
     -- erase the IK environment: 
-    simIK.eraseEnvironment(ikEnv) 
+    simIK.eraseEnvironment(ikEnv)
+    HideDialog()
 end
 
 function CalculateIKJointPosition()
@@ -92,13 +234,19 @@ function CalculateIKJointPosition()
         simIK.handleIkGroup(ikEnv,ikGroup_damped)
     end
     for i=1, #simMotors,1 do
-        motorsPositions[i]=simIK.getJointPosition(ikEnv,ikJoints[i])
+        targetMotorsPositions[i]=simIK.getJointPosition(ikEnv,ikJoints[i])
+    end
+end
+
+function GetAllMotorsPosition()
+    for i=1, #simMotors,1 do
+        motorsPositions[i]=ConvertRadToDeg(sim.getJointPosition(simMotors[i]))
     end
 end
 
 function SetAllMotorsPosition()
     for i=1,#simMotors,1 do
         -- apply the joint values computed in the IK environment to their CoppeliaSim joint counterparts:
-        sim.setJointTargetPosition(simMotors[i],motorsPositions[i])
+        sim.setJointTargetPosition(simMotors[i],targetMotorsPositions[i])
     end
 end
