@@ -1,0 +1,36 @@
+    <ui title="Mark2 control GUI" closeable="true" resizable="false" activate="false" size="600,100">
+        <group layout="vbox" flat="false" id="1">
+            <label text="Choose control mode:"/>
+            <radiobutton text="Motor control mode" checked="true" on-click="RbClicked" id="2"/>
+            <radiobutton text="Target control mode" on-click="RbClicked" id="3"/>
+        </group>
+        <group layout="vbox" flat="false" id="4" enabled="true">
+            <label text="Motor control mode:"/>
+            <group layout="form" flat="true">
+                <label text="6 motor pos (deg): 0" id="5"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-150" maximum="150" on-change="SliderMotorPositionChange" id="6"/>
+                <label text="5 motor pos (deg): 0" id="7"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-125" maximum="110" on-change="SliderMotorPositionChange" id="8"/>
+                <label text="4 motor pos (deg): 0" id="9"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-155" maximum="155" on-change="SliderMotorPositionChange" id="10"/>
+                <label text="3 motor pos (deg): 0" id="11"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-170" maximum="10" on-change="SliderMotorPositionChange" id="12"/>
+                <label text="2 motor pos (deg): 0" id="13"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-155" maximum="65" on-change="SliderMotorPositionChange" id="14"/>
+                <label text="1 motor pos (deg): 0" id="15"/>
+                <hslider tick-position="above" tick-interval="1" minimum="-105" maximum="105" on-change="SliderMotorPositionChange" id="16"/>
+            </group>
+        </group>
+        <group layout="vbox" flat="false" id="17" enabled="false">
+            <label text="Target control mode:"/>
+            <group layout="form" flat="true">
+                <label text="X (m): "/>
+                <edit value="0" id="18"/>
+                <label text="Y (m):"/>
+                <edit value="0" id="19"/>
+                <label text="Z (m):"/>
+                <edit value="0" id="20"/>
+            </group>
+            <button text="Go!" on-click="ButtonClicked" id="21"/>
+        </group>
+    </ui>
