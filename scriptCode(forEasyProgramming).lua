@@ -32,6 +32,7 @@ function ButtonClicked(ui,id)
     for i=1,5,1 do
         CalculateIKJointPosition()
     end
+    
     UpdateUi()
 end
 
@@ -134,7 +135,6 @@ function sysCall_init()
     target=sim.getObjectHandle('Target')
     targetPosition=sim.getObjectPosition(target,-1)
     simMotors={}
-    motorsPositions={}
     targetMotorsPositions={}
     for i=1,6,1 do
         targetMotorsPositions[i]=0
@@ -143,7 +143,6 @@ function sysCall_init()
         simMotors[i]=sim.getObjectHandle('Motor'..i)
     end
     
-    GetAllMotorsPosition()
     -- Now build a kinematic chain and 2 IK groups (undamped and damped) inside of the IK plugin environment,
     -- based on the kinematics of the robot in the scene:
     ikJoints={}
@@ -211,11 +210,7 @@ end
 
 function sysCall_actuation()
     targetPosition=sim.getObjectPosition(target,-1)
-    --GetAllMotorsPosition()
-
-    --CalculateIKJointPosition()
     SetAllMotorsPosition()
-    --UpdateUi()
 end 
 
 function sysCall_cleanup()
@@ -233,16 +228,12 @@ function CalculateIKJointPosition()
         -- try to solve with the damped method:
         simIK.handleIkGroup(ikEnv,ikGroup_damped)
     end
+    
     for i=1, #simMotors,1 do
         targetMotorsPositions[i]=simIK.getJointPosition(ikEnv,ikJoints[i])
     end
 end
 
-function GetAllMotorsPosition()
-    for i=1, #simMotors,1 do
-        motorsPositions[i]=ConvertRadToDeg(sim.getJointPosition(simMotors[i]))
-    end
-end
 
 function SetAllMotorsPosition()
     for i=1,#simMotors,1 do
